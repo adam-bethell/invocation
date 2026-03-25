@@ -8,29 +8,85 @@ local gfx <const> = pd.graphics
 
 class("Deck").extends(gfx.sprite)
 
+local rockImage = gfx.image.new("images/rock_icon")
+assert(rockImage)
+local paperImage = gfx.image.new("images/paper_icon")
+assert(paperImage)
+local scissorsImage = gfx.image.new("images/scissors_icon")
+assert(scissorsImage)
+
+local whiteShieldImage = gfx.image.new("images/white_shield")
+assert(whiteShieldImage)
+local blackShieldImage = gfx.image.new("images/black_shield")
+assert(blackShieldImage)
+
 function Deck:init()
+    self.cardW = 15 * 3
+
+    self.x1 = 240 + 14 + (self.cardW // 2)
+    self.x2 = 240 + 14 + (self.cardW // 2) + self.cardW + 5
+    self.x3 = 240 + 14 + (self.cardW // 2) + (self.cardW * 2) + 10
+
+
+
+    self.rockSprite = gfx.sprite.new(rockImage)
+    self.rockSprite:moveTo(self.x1, (self.cardW // 2))
+    self.rockSprite:add()
+    
+    self.paperSprite = gfx.sprite.new(paperImage)
+    self.paperSprite:moveTo(self.x2, (self.cardW // 2))
+    self.paperSprite:add()
+
+    self.scissorsSprite  = gfx.sprite.new(scissorsImage)
+    self.scissorsSprite:moveTo(self.x3, (self.cardW // 2))
+    self.scissorsSprite:add()
+
+
+
+    self.whiteShieldSprite = gfx.sprite.new(whiteShieldImage)
+    self.whiteShieldSprite:moveTo(self.x1 - 10, self.cardW * 2 + 10)
+    self.whiteShieldSprite:add()
+
+    self.whiteShieldSprite2 = gfx.sprite.new(whiteShieldImage)
+    self.whiteShieldSprite2:moveTo(self.x2 - 10, self.cardW * 2 + 10)
+    self.whiteShieldSprite2:add()
+    self.whiteShieldSprite3 = gfx.sprite.new(whiteShieldImage)
+    self.whiteShieldSprite3:moveTo(self.x3 - 10, self.cardW * 2 + 10)
+    self.whiteShieldSprite3:add()
+
+    self.blackShieldSprite = gfx.sprite.new(blackShieldImage)
+    self.blackShieldSprite:moveTo(self.x1 + 10, self.cardW * 2 + 10)
+    self.blackShieldSprite:add()
+
+    self.blackShieldSprite2 = gfx.sprite.new(blackShieldImage)
+    self.blackShieldSprite2:moveTo(self.x2 + 10, self.cardW * 2 + 10)
+    self.blackShieldSprite2:add()
+    self.blackShieldSprite3 = gfx.sprite.new(blackShieldImage)
+    self.blackShieldSprite3:moveTo(self.x3 + 10, self.cardW * 2 + 10)
+    self.blackShieldSprite3:add()
+
+
+
     self.card1 = self:generateCard()
     self.card2 = self:generateCard()
     self.card3 = self:generateCard()
 
-    self.cardW = 15 * 3
-
     self.cardImage1 = gfx.image.new(self.cardW,self.cardW)
     self:drawCard(self.cardImage1, self.card1)
     self.cardSprite1 = gfx.sprite.new(self.cardImage1)
-    self.cardSprite1:moveTo(240 + 14 + (self.cardW // 2), self.cardW + (self.cardW // 2))
+    self.cardSprite1:moveTo(self.x1, self.cardW + (self.cardW // 2))
     self.cardSprite1:add()
 
     self.cardImage2 = gfx.image.new(self.cardW,self.cardW)
     self:drawCard(self.cardImage2, self.card2)
     self.cardSprite2 = gfx.sprite.new(self.cardImage2)
-    self.cardSprite2:moveTo(240 + 14 + (self.cardW // 2) + self.cardW + 5, self.cardW + (self.cardW // 2))
+    self.cardSprite2:moveTo(self.x2, self.cardW + (self.cardW // 2))
     self.cardSprite2:add()
 
     self.cardImage3 = gfx.image.new(self.cardW,self.cardW)
     self:drawCard(self.cardImage3, self.card3)
     self.cardSprite3 = gfx.sprite.new(self.cardImage3)
-    self.cardSprite3:moveTo(240 + 14 + (self.cardW // 2) + (self.cardW * 2) + 10, self.cardW + (self.cardW // 2))
+    self.cardSprite3:moveTo(self.x3, self.cardW + (self.cardW // 2))
     self.cardSprite3:add()
 end
 
@@ -61,8 +117,6 @@ function Deck:generateCard()
 end
 
 function Deck:drawCard(cardImage, card)
-    printTable(card)
-
     local width = self.cardW / 3
 
     cardImage:clear(gfx.kColorClear)
