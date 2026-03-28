@@ -3,16 +3,12 @@ import "CoreLibs/graphics"
 import "CoreLibs/sprites"
 import "CoreLibs/timer"
 
-import "scripts/board"
-import "scripts/deck"
-import "scripts/combat"
+import "scripts/gameController"
 
 local pd <const> = playdate
 local gfx <const> = pd.graphics
 
-Board()
-Deck()
-Combat()
+GameController()
 
 math.randomseed(pd.getSecondsSinceEpoch())
 function pd.update()

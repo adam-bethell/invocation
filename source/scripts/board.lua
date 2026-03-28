@@ -24,7 +24,9 @@ local blackStoneImage4 = gfx.image.new("images/black_stone_y4")
 assert(blackStoneImage4)
 
 function Board:init()
-    self.hasFocus = true
+    Board.super.init(self)
+
+    self.hasFocus = false
 
     self.boardState = {
         {0,0,0,0,0,0},
@@ -60,9 +62,9 @@ function Board:init()
     self:moveTo(120,120)
     self:add()
 
-    local boardImage = gfx.image.new("images/board")
-    assert(boardImage)
-    self.boardSprite = gfx.sprite.new(boardImage)
+    self.boardImage = gfx.image.new("images/board")
+    assert(self.boardImage)
+    self.boardSprite = gfx.sprite.new(self.boardImage)
     self.boardSprite:moveTo(120, 120)
     self.boardSprite:add()
 
@@ -84,7 +86,22 @@ function Board:init()
     local position = self.boardPositions[self.selectorPosition[2]][self.selectorPosition[1]]
     self.selectorSprite:setZIndex(10)
     self.selectorSprite:moveTo(position[1], position[2] + self.selectorOffsetY)
+    self.selectorSprite:setVisible(false)
     self.selectorSprite:add()
+
+    self.introAnimator = gfx.sprite.new()
+    self.introFrameCounter = 0
+    self.introAnimator.update = function()
+        self.introFrameCounter += 1
+        self.boardImage:vcrPauseFilterImage()
+        if (self.introFrameCounter % 2 == 0) then
+            self.boardSprite:setImage(self.boardImage:vcrPauseFilterImage())
+        elseif (self.introFrameCounter >= 15) then
+            self.introAnimator:remove()
+            self.boardSprite:setImage(self.boardImage)
+        end
+    end
+    self.introAnimator:add()
 end
 
 function Board:update()
@@ -148,4 +165,9 @@ function Board:setStone(x, y, value)
         stoneSprite:add()
         self.boardStones[y][x] = stoneSprite
     end
+end
+
+function Board:giveFocus()
+    self.hasFocus = true
+    self.selectorSprite:setVisible(true)
 end
