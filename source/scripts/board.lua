@@ -27,6 +27,7 @@ function Board:init()
     Board.super.init(self)
 
     self.hasFocus = false
+    self.player = 1
 
     self.boardState = {
         {0,0,0,0,0,0},
@@ -142,8 +143,12 @@ end
 function Board:updateSelectorAction()
     if pd.buttonJustPressed(pd.kButtonA) then
         local state = self.boardState[self.selectorPosition[2]][self.selectorPosition[1]]
-        state = (state + 1 >= 3) and 0 or (state + 1)
-        self:setStone(self.selectorPosition[1], self.selectorPosition[2], state)
+        if (self:countStones(self.player) < 4 and state == 0) then
+            self:setStone(self.selectorPosition[1], self.selectorPosition[2], self.player)
+            self:setFocus(false)
+        elseif (self:countStones(self.player) >= 4 and state == self.player) then
+            self:setStone(self.selectorPosition[1], self.selectorPosition[2], 0)
+        end
     end
 end
 
@@ -160,6 +165,7 @@ function Board:setStone(x, y, value)
     end
 
     if value ~= 0 then
+        print(value, y)
         local stoneSprite = gfx.sprite.new(self.boardStoneImages[value][y])
         stoneSprite:moveTo(self.boardPositions[y][x][1], self.boardPositions[y][x][2])
         stoneSprite:add()
@@ -167,7 +173,31 @@ function Board:setStone(x, y, value)
     end
 end
 
+function Board:setPlayer(player)
+    self.player = player
+end
+
+function Board:getFocus()
+    return self.hasFocus
+end
+
 function Board:giveFocus()
-    self.hasFocus = true
-    self.selectorSprite:setVisible(true)
+    self:setFocus(true)
+end
+
+function Board:setFocus(value)
+    self.hasFocus = value
+    self.selectorSprite:setVisible(value)
+end
+
+function Board:countStones(player)
+    local count = 0
+    for y = 1, 6 do
+        for x = 1, 6 do
+            if (self.boardState[y][x] == player) then
+                count += 1
+            end
+        end
+    end
+    return count
 end

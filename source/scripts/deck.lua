@@ -30,6 +30,7 @@ function Deck:init()
     self.x1 = 240 + 14 + (self.cardW // 2)
     self.x2 = 240 + 14 + (self.cardW // 2) + self.cardW + 5
     self.x3 = 240 + 14 + (self.cardW // 2) + (self.cardW * 2) + 10
+    self.xs = {self.x1, self.x2, self.x3}
     self.whiteShieldOffset = -10
     self.blackShieldOffset = 10
     self.y = self.cardW * 2 + 10
@@ -56,6 +57,8 @@ function Deck:init()
     self.card1 = self:generateCard()
     self.card2 = self:generateCard()
     self.card3 = self:generateCard()
+    self.whiteShield = math.random(3)
+    self.blackShield = math.random(3)
 
     self.cardImage1 = gfx.image.new(self.cardW,self.cardW)
     self:drawCard(self.cardImage1, self.card1)
@@ -131,7 +134,7 @@ function Deck:init()
             self.rockSprite:setVisible(false)
             self.paperSprite:setVisible(false)
             self.scissorsSprite:setVisible(false)
-            
+
             self.whiteShieldSprite:setVisible(false)
             self.blackShieldSprite:moveTo(self.x3 + self.blackShieldOffset, self.y)
             self.blackShieldSprite:setVisible(true)
@@ -140,8 +143,10 @@ function Deck:init()
             self.paperSprite:setVisible(true)
             self.scissorsSprite:setVisible(true)
 
-            self.whiteShieldSprite:setVisible(false)
-            self.blackShieldSprite:setVisible(false)
+            self.whiteShieldSprite:moveTo(self.xs[self.whiteShield] + self.whiteShieldOffset, self.y)
+            self.blackShieldSprite:moveTo(self.xs[self.blackShield] + self.blackShieldOffset, self.y)
+            self.whiteShieldSprite:setVisible(true)
+            self.blackShieldSprite:setVisible(true)
         elseif (self.introAnimatorFrame > 19) then
             self.introAnimator:remove()
         end
