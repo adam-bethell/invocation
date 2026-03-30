@@ -75,7 +75,7 @@ function GameController:update()
         self.board:giveFocus()
         self.state = "action_stone_waiting"
     elseif (self.state == "action_stone_waiting") then
-        if (not self.board:hasFocus()) then
+        if (not self.board:getFocus()) then
             self.state = "action_card_waiting"
         end
     elseif (self.state == "action_shield") then
@@ -83,9 +83,43 @@ function GameController:update()
         self.deck:giveFocus()
         self.state = "action_shield_waiting"
     elseif (self.state == "action_shield_waiting") then
-        if (not self.deck:hasFocus()) then
+        if (not self.deck:getFocus()) then
             self.state = "action_card_waiting"
         end
     elseif (self.state == "action_card_waiting") then
+        if (self.board:countStones(self.currentPlayer) < 3) then
+            self.currentPlayer = (self.currentPlayer == 1) and 2 or 1
+            if (self.currentPlayer == 1) then
+                self.options = Options("whiteStart")
+            else
+                self.options = Options("blackStart")
+            end
+            self.state = "ready_waiting"
+        else
+            self:getMatches(self.currentPlayer)
+        end
     end
+end
+
+function GameController:getMatches(player)
+    local cards = { 
+        self.deck.card1,
+        self.deck.card2,
+        self.deck.card3
+    }
+
+    local boardState = self.board.boardState
+    local stones = {}
+    for y = 1, #boardState do
+        for x = 1, #boardState[y] do
+            if (boardState[y][x] == player) then
+                -- For each stone belonging to player, check each stone in each card to check for a match
+
+
+
+
+            end
+        end
+    end
+
 end

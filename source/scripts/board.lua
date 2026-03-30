@@ -165,7 +165,6 @@ function Board:setStone(x, y, value)
     end
 
     if value ~= 0 then
-        print(value, y)
         local stoneSprite = gfx.sprite.new(self.boardStoneImages[value][y])
         stoneSprite:moveTo(self.boardPositions[y][x][1], self.boardPositions[y][x][2])
         stoneSprite:add()
