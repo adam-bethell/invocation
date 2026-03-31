@@ -98,6 +98,10 @@ function Deck:init()
     self.cardSprite3:moveTo(self.x3, self.cardW + (self.cardW // 2))
     self.cardSprite3:add()
 
+    self.cards = {self.card1, self.card2, self.card3}
+    self.cardImages = {self.cardImage1, self.cardImage2, self.cardImage3}
+    self.cardSprites = {self.cardSprite1, self.cardSprite2, self.cardSprite3}
+
     self:addIntroAnimator()
 
     self:add()
@@ -196,6 +200,20 @@ function Deck:update()
             self.hasFocus = false
         end
     end
+end
+
+function Deck:getShield(player)
+    if (self.player == 1) then
+        return self.whiteShield
+    elseif (self.player == 2) then
+        return self.blackShield
+    end
+end
+
+function Deck:cardUsed(index)
+    self.cards[index] = self:generateCard()
+    self:drawCard(self.cardImages[index], self.cards[index])
+    self.cardSprites[index]:markDirty()
 end
 
 function Deck:addIntroAnimator()

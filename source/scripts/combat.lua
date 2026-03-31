@@ -61,16 +61,24 @@ end
 function Combat:update()
 end
 
-function Combat:blackAttack()
-    self.bAnim.frame = 1
-    self.playerLife[2] -= 1
-    self.blackLifeSprite:setImage(self:getTextNum(self.playerLife[2]))
+function Combat:attack(player)
+    if (player == 1) then
+        self:attackWhite()
+    else
+        self:attackBlack()
+    end
 end
 
-function Combat:whiteAttack()
-    self.wAnim.frame = 1
+function Combat:attackWhite()
+    self.bAnim.frame = 1
     self.playerLife[1] -= 1
     self.whiteLifeSprite:setImage(self:getTextNum(self.playerLife[1]))
+end
+
+function Combat:attackBlack()
+    self.wAnim.frame = 1
+    self.playerLife[2] -= 1
+    self.blackLifeSprite:setImage(self:getTextNum(self.playerLife[2]))
 end
 
 function Combat:getTextNum(value)

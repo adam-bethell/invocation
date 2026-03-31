@@ -88,16 +88,43 @@ function GameController:update()
         end
     elseif (self.state == "action_card_waiting") then
         if (self.board:countStones(self.currentPlayer) < 3) then
-            self.currentPlayer = (self.currentPlayer == 1) and 2 or 1
-            if (self.currentPlayer == 1) then
-                self.options = Options("whiteStart")
-            else
-                self.options = Options("blackStart")
-            end
-            self.state = "ready_waiting"
+            self.state = "next_turn"
         else
-            self:getMatches(self.currentPlayer)
+            self.matches = self:getMatches(self.currentPlayer)
+            if (self.matches == nil) then
+                self.state = "next_turn"
+            else
+                self.options = Options("attack")
+                self.state = "attack_yn_waiting"
+            end
         end
+    elseif (self.state == "attack_yn_waiting") then
+        if (self.options:isFinished()) then
+            local result = self.options:getResult()
+            if (result == 3) then
+                self.state = "next_turn"
+            else
+                self.options = Options("attackChoice", self.matches)
+                self.state = "attack_waiting"
+            end
+        end
+    elseif (self.state == "attack_waiting") then
+        if (self.options:isFinished()) then
+            local result = self.options:getResult()
+            self:processAttack(result, self.currentPlayer)
+            self.deck:cardUsed(result)
+            self.state = "DEBUG_NOTHING"
+        end
+    elseif (self.state == "next_turn") then
+        self.currentPlayer = (self.currentPlayer == 1) and 2 or 1
+        if (self.currentPlayer == 1) then
+            self.options = Options("whiteStart")
+        else
+            self.options = Options("blackStart")
+        end
+        self.state = "ready_waiting"
+    elseif (self.state == "DEBUG_NOTHING") then
+        -- do nothing
     end
 end
 
@@ -108,18 +135,69 @@ function GameController:getMatches(player)
         self.deck.card3
     }
 
+    local foundCards = {}
+
     local boardState = self.board.boardState
     local stones = {}
     for y = 1, #boardState do
         for x = 1, #boardState[y] do
             if (boardState[y][x] == player) then
                 -- For each stone belonging to player, check each stone in each card to check for a match
+                for i = 1, #cards do
+                    local card = cards[i]
+                    for j = 1, #card do
+                        if (table.indexOfElement(foundCards, i) ~= nil) then
+                            -- card already found
+                            break
+                        end
+                        local cy = card[j][1]
+                        local cx = card[j][2]
+                        local dy = y - cy
+                        local dx = x - cx
 
+                        local translated_card = {
+                            {card[1][1] + dy, card[1][2] + dx},
+                            {card[2][1] + dy, card[2][2] + dx},
+                            {card[3][1] + dy, card[3][2] + dx}
+                        }
+                        
+                        local found = true
+                        for t = 1, #translated_card do
+                            local ty = translated_card[t][1]
+                            local tx = translated_card[t][2]
+                            if (ty < 1 or tx < 1 or ty > 6 or tx > 6) then
+                                -- Stone position is out of bounds
+                                found = false
+                                break
+                            end
 
-
-
+                            if (boardState[ty][tx] ~= player) then
+                                found = false
+                                break
+                            end
+                        end
+                        if (found) then
+                            table.insert(foundCards, i)
+                            break
+                        end
+                    end
+                end
             end
         end
     end
 
+    return foundCards
+end
+
+function GameController:processAttack(attack, attacker)
+    local defender = (attacker == 1) and 2 or 1
+    local defense = self.deck:getShield(defender)
+    if (attack == defense) then
+        -- stagger
+    elseif ((attack == 1 and defense == 3) or (attack == 2 and defense == 1) or (attack == 3 and defense == 2)) then
+        -- damage
+        self.combat:attack(defender)
+    else
+        -- nothing
+    end
 end
